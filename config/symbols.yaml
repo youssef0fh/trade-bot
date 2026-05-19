@@ -1,0 +1,25 @@
+telegram:
+  bot_token_env: TELEGRAM_BOT_TOKEN
+  chat_id_env: TELEGRAM_CHAT_ID
+
+defaults:
+  exchange: binance
+  preset: Auto              # Auto | Conservative | Default | Aggressive | Scalping | Swing | Crypto 24/7 | Custom
+  grade_filter: All         # All | "A+ and A" | "A+ Only"
+  hide_c_grade: true
+  use_structure_sl: true
+  swing_lookback: 10
+  tp1_rr: 1.0
+  tp2_rr: 2.0
+  tp3_rr: 3.0
+  htf: null                 # null = auto from timeframe; "off" to disable HTF bias
+  events:
+    entry: true
+    tp1: true
+    tp2: true
+    tp3: true
+    sl: true
+
+watchlist:
+  - symbol: ETH/USDT
+    timeframe: 1h

@@ -1,0 +1,20 @@
+{
+  "BTC/USDT|1h": {
+    "last_alert_bar_ts": 0,
+    "last_closed_bar_ts": 1778875200,
+    "last_direction": 0,
+    "open_trade": null
+  },
+  "ETH/USDT|15m": {
+    "last_alert_bar_ts": 0,
+    "last_closed_bar_ts": 1778877000,
+    "last_direction": 0,
+    "open_trade": null
+  },
+  "SOL/USDT|4h": {
+    "last_alert_bar_ts": 0,
+    "last_closed_bar_ts": 1778875200,
+    "last_direction": 0,
+    "open_trade": null
+  }
+}
