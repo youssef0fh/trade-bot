@@ -1,4 +1,10 @@
-"""Binance public OHLCV fetcher via ccxt. No API key required for klines."""
+"""Public OHLCV fetcher via ccxt (Kraken).
+
+Originally built around Binance; switched to Kraken because Binance returns
+HTTP 451 for US-hosted IPs, which is what GitHub Actions runners use. All
+ccxt exchanges share the same fetch_ohlcv interface, so callers are
+unaffected. The module name remains ``binance`` to avoid churn elsewhere.
+"""
 
 from __future__ import annotations
 
@@ -34,15 +40,15 @@ def suggest_htf(tf: str) -> str | None:
     return DEFAULT_HTF.get(tf)
 
 
-def _client() -> ccxt.binance:
-    return ccxt.binance({"enableRateLimit": True})
+def _client() -> ccxt.kraken:
+    return ccxt.kraken({"enableRateLimit": True})
 
 
 def fetch_ohlcv(
     symbol: str,
     timeframe: str,
     limit: int = 500,
-    client: ccxt.binance | None = None,
+    client: ccxt.kraken | None = None,
 ) -> pd.DataFrame:
     """Fetch the most recent ``limit`` candles, drop the in-progress one, and
     return a UTC-indexed DataFrame with columns: open/high/low/close/volume.
