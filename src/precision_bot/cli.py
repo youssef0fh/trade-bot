@@ -10,6 +10,7 @@ import argparse
 import logging
 import os
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,33 @@ def _setup_logging(verbose: bool) -> None:
         level=logging.DEBUG if verbose else logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+
+
+def _send_ping(cfg: BotConfig) -> int:
+    """Send a single diagnostic message and exit. Lets the ping-telegram
+    workflow verify creds + reachability without waiting for a real signal.
+    """
+    token = os.environ.get(cfg.telegram.bot_token_env)
+    chat_id = os.environ.get(cfg.telegram.chat_id_env)
+    if not token or not chat_id:
+        log.error("ping: missing %s / %s in environment", cfg.telegram.bot_token_env, cfg.telegram.chat_id_env)
+        return 2
+
+    sha = os.environ.get("GITHUB_SHA", "local")[:7]
+    run_id = os.environ.get("GITHUB_RUN_ID", "local")
+    now = datetime.now(UTC).isoformat(timespec="seconds")
+    text = f"🔔 trade-bot ping\nsha: {sha}\nrun: {run_id}\nutc: {now}"
+
+    client = TelegramClient(token, chat_id)
+    try:
+        client.send(text)
+    except Exception as e:
+        log.error("ping: telegram send failed: %s", e)
+        return 1
+    finally:
+        client.close()
+    log.info("ping sent (sha=%s run=%s)", sha, run_id)
+    return 0
 
 
 def _build_indicator_cfg(row_settings: dict[str, Any]) -> ps.IndicatorConfig:
@@ -217,10 +245,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--symbol", action="append", default=[], help="filter watchlist by symbol")
     parser.add_argument("--tf", action="append", default=[], help="filter watchlist by timeframe")
     parser.add_argument("--dry-run", action="store_true", help="don't send telegram messages")
+    parser.add_argument("--ping", action="store_true",
+                        help="send a diagnostic Telegram message and exit; skips fetch/indicator")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args(argv)
 
     _setup_logging(args.verbose)
+
+    if args.ping:
+        return _send_ping(load_config(args.config))
 
     only: list[tuple[str, str]] | None = None
     if args.symbol and args.tf:
