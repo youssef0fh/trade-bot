@@ -23,7 +23,7 @@ class TelegramConfig(BaseModel):
 
 
 class Defaults(BaseModel):
-    exchange: str = "binance"
+    exchange: str = "kraken"
     preset: str = "Auto"
     grade_filter: str = "All"  # "All" | "A+ and A" | "A+ Only"
     hide_c_grade: bool = True
@@ -32,7 +32,7 @@ class Defaults(BaseModel):
     tp1_rr: float = 1.0
     tp2_rr: float = 2.0
     tp3_rr: float = 3.0
-    htf: str | None = None  # None = auto-select per data/binance.DEFAULT_HTF; "off" = disable
+    htf: str | None = None  # None = auto-select per data/exchange.DEFAULT_HTF; "off" = disable
     events: EventFlags = Field(default_factory=EventFlags)
 
 

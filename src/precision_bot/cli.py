@@ -17,7 +17,7 @@ import pandas as pd
 
 from . import state as state_mod
 from .config import BotConfig, WatchlistRow, load_config, merge_row
-from .data import binance
+from .data import exchange
 from .indicator import precision_sniper as ps
 from .indicator.presets import resolve_preset, resolved_name
 from .notifier.telegram import TelegramClient, format_entry, format_event
@@ -34,7 +34,7 @@ def _setup_logging(verbose: bool) -> None:
 
 
 def _build_indicator_cfg(row_settings: dict[str, Any]) -> ps.IndicatorConfig:
-    tf_minutes = binance.tf_to_minutes(row_settings["timeframe"])
+    tf_minutes = exchange.tf_to_minutes(row_settings["timeframe"])
     params = resolve_preset(row_settings["preset"], tf_minutes)
     return ps.IndicatorConfig(
         preset_params=params,
@@ -51,14 +51,14 @@ def _build_indicator_cfg(row_settings: dict[str, Any]) -> ps.IndicatorConfig:
 def _fetch_for_row(row_settings: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame | None]:
     symbol = row_settings["symbol"]
     tf = row_settings["timeframe"]
-    df = binance.fetch_ohlcv(symbol, tf, limit=500)
+    df = exchange.fetch_ohlcv(symbol, tf, limit=500)
 
     htf_setting = row_settings.get("htf")
     if htf_setting == "off":
         htf_df = None
     else:
-        htf = htf_setting or binance.suggest_htf(tf)
-        htf_df = binance.fetch_ohlcv(symbol, htf, limit=500) if htf else None
+        htf = htf_setting or exchange.suggest_htf(tf)
+        htf_df = exchange.fetch_ohlcv(symbol, htf, limit=500) if htf else None
     return df, htf_df
 
 
@@ -108,7 +108,7 @@ def _process_row(
         "[%s %s] bar=%s close=%s bull=%.1f bear=%.1f buy=%s sell=%s preset=%s",
         symbol, tf, df.index[-1], last["close"], last["bull_score"], last["bear_score"],
         bool(last["buy"]), bool(last["sell"]),
-        resolved_name(row_settings["preset"], binance.tf_to_minutes(tf)),
+        resolved_name(row_settings["preset"], exchange.tf_to_minutes(tf)),
     )
 
     # 1) TP/SL events on the open trade (evaluated on the new bar).

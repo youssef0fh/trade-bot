@@ -1,9 +1,9 @@
-"""Public OHLCV fetcher via ccxt (Kraken).
+"""Public OHLCV fetcher via ccxt.
 
-Originally built around Binance; switched to Kraken because Binance returns
-HTTP 451 for US-hosted IPs, which is what GitHub Actions runners use. All
-ccxt exchanges share the same fetch_ohlcv interface, so callers are
-unaffected. The module name remains ``binance`` to avoid churn elsewhere.
+Currently backed by Kraken (chosen because GitHub Actions runners are
+US-hosted and Binance returns HTTP 451 for US IPs). Swap the ccxt class in
+``_client`` to switch exchanges; the rest of the codebase talks to this
+module through the symbol-agnostic ``fetch_ohlcv`` interface.
 """
 
 from __future__ import annotations

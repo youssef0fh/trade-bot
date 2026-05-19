@@ -3,7 +3,7 @@ telegram:
   chat_id_env: TELEGRAM_CHAT_ID
 
 defaults:
-  exchange: binance
+  exchange: kraken
   preset: Auto              # Auto | Conservative | Default | Aggressive | Scalping | Swing | Crypto 24/7 | Custom
   grade_filter: All         # All | "A+ and A" | "A+ Only"
   hide_c_grade: true

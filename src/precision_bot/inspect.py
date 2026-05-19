@@ -12,7 +12,7 @@ import argparse
 
 import pandas as pd
 
-from .data import binance
+from .data import exchange
 from .indicator import precision_sniper as ps
 from .indicator.presets import resolve_preset, resolved_name
 
@@ -64,7 +64,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, default=500, help="how many candles to fetch for warmup")
     args = parser.parse_args(argv)
 
-    tf_minutes = binance.tf_to_minutes(args.timeframe)
+    tf_minutes = exchange.tf_to_minutes(args.timeframe)
     params = resolve_preset(args.preset, tf_minutes)
     cfg = ps.IndicatorConfig(
         preset_params=params,
@@ -72,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
         hide_c_grade=not args.no_hide_c,
     )
 
-    df = binance.fetch_ohlcv(args.symbol, args.timeframe, limit=args.limit)
+    df = exchange.fetch_ohlcv(args.symbol, args.timeframe, limit=args.limit)
     if df.empty:
         print("No closed candles returned.")
         return 1
@@ -81,8 +81,8 @@ def main(argv: list[str] | None = None) -> int:
         htf_df = None
         htf_label = "off"
     else:
-        htf = args.htf or binance.suggest_htf(args.timeframe)
-        htf_df = binance.fetch_ohlcv(args.symbol, htf, limit=args.limit) if htf else None
+        htf = args.htf or exchange.suggest_htf(args.timeframe)
+        htf_df = exchange.fetch_ohlcv(args.symbol, htf, limit=args.limit) if htf else None
         htf_label = htf or "—"
 
     frame = ps.evaluate(df, cfg, htf_df=htf_df, last_direction=0)
