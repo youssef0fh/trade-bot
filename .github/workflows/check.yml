@@ -2,7 +2,7 @@ name: precision-bot
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # GitHub's minimum granularity
+    - cron: "1 * * * *"   # once per hour, 1 min after the top — matches the 1h timeframe in config/symbols.yaml
   workflow_dispatch: {}
 
 permissions:
