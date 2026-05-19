@@ -68,9 +68,11 @@ def _process_row(
     state: dict[str, Any],
     notifier: TelegramClient | None,
     dry_run: bool,
-) -> list[str]:
-    """Process one (symbol, timeframe) row. Returns the list of message strings
-    that would be (or were) sent — useful for tests and `--dry-run` output.
+) -> tuple[list[str], bool]:
+    """Process one (symbol, timeframe) row. Returns ``(messages, errored)``:
+    ``messages`` is the list of strings sent (or that would have been sent in
+    ``--dry-run``), and ``errored`` is True iff the row failed in a way that
+    should surface to the workflow's exit code.
     """
     msgs: list[str] = []
     row_settings = {**defaults_dict, **{}}
@@ -89,16 +91,16 @@ def _process_row(
         df, htf_df = _fetch_for_row(row_settings)
     except Exception as e:
         log.error("[%s %s] fetch failed: %s", symbol, tf, e)
-        return msgs
+        return msgs, True
 
     if df.empty:
         log.warning("[%s %s] no closed candles returned", symbol, tf)
-        return msgs
+        return msgs, False
 
     last_bar_ts = int(df.index[-1].timestamp())
     if last_bar_ts <= entry_state["last_closed_bar_ts"]:
         log.info("[%s %s] no new closed bar (latest=%s)", symbol, tf, df.index[-1])
-        return msgs
+        return msgs, False
 
     cfg = _build_indicator_cfg(row_settings)
     frame = ps.evaluate(df, cfg, htf_df=htf_df, last_direction=entry_state["last_direction"])
@@ -160,7 +162,7 @@ def _process_row(
             notifier.send(m)
     for m in msgs:
         log.info("[%s %s] %s", symbol, tf, m)
-    return msgs
+    return msgs, False
 
 
 def run(config_path: Path, state_path: Path, dry_run: bool, only: list[tuple[str, str]] | None = None) -> int:
@@ -190,15 +192,21 @@ def run(config_path: Path, state_path: Path, dry_run: bool, only: list[tuple[str
             return 2
 
     total = 0
+    errored = 0
     for row in rows:
-        sent = _process_row(row, defaults_dict, state, notifier, dry_run)
+        sent, row_errored = _process_row(row, defaults_dict, state, notifier, dry_run)
         total += len(sent)
+        if row_errored:
+            errored += 1
 
     state_mod.save(state_path, state)
     if notifier:
         notifier.close()
 
     log.info("done — %d message(s) emitted across %d row(s)", total, len(rows))
+    if errored:
+        log.error("%d of %d row(s) failed — exiting non-zero so the workflow surfaces it", errored, len(rows))
+        return 1
     return 0
 
 
