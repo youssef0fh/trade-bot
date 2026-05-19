@@ -2,7 +2,7 @@ name: precision-bot
 
 on:
   schedule:
-    - cron: "1 * * * *"   # once per hour, 1 min after the top — matches the 1h timeframe in config/symbols.yaml
+    - cron: "3,18,33,48 * * * *"   # every 15 min, offset 3 min off quarter-hours to dodge GH scheduler congestion
   workflow_dispatch: {}
 
 permissions:
