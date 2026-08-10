@@ -12,20 +12,20 @@
     "open_trade": null
   },
   "ETH/USDT|1h": {
-    "last_alert_bar_ts": 1785776400,
-    "last_closed_bar_ts": 1786359600,
-    "last_direction": 1,
+    "last_alert_bar_ts": 1786363200,
+    "last_closed_bar_ts": 1786363200,
+    "last_direction": -1,
     "open_trade": {
-      "dir": "long",
-      "entry": 1868.97,
-      "entry_bar_ts": 1785776400,
-      "sl": 1852.2664828457537,
-      "tp1": 1885.6735171542464,
-      "tp1_hit": true,
-      "tp2": 1902.3770343084927,
-      "tp2_hit": true,
-      "tp3": 1919.080551462739,
-      "tp3_hit": true
+      "dir": "short",
+      "entry": 1916.63,
+      "entry_bar_ts": 1786363200,
+      "sl": 1927.5657377865625,
+      "tp1": 1905.6942622134377,
+      "tp1_hit": false,
+      "tp2": 1894.7585244268753,
+      "tp2_hit": false,
+      "tp3": 1883.8227866403129,
+      "tp3_hit": false
     }
   },
   "SOL/USDT|4h": {
