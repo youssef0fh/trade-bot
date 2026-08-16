@@ -13,7 +13,7 @@
   },
   "ETH/USDT|1h": {
     "last_alert_bar_ts": 1786896000,
-    "last_closed_bar_ts": 1786896000,
+    "last_closed_bar_ts": 1786899600,
     "last_direction": 1,
     "open_trade": {
       "dir": "long",
@@ -21,7 +21,7 @@
       "entry_bar_ts": 1786896000,
       "sl": 1881.1490096641746,
       "tp1": 1887.6109903358256,
-      "tp1_hit": false,
+      "tp1_hit": true,
       "tp2": 1890.841980671651,
       "tp2_hit": false,
       "tp3": 1894.0729710074766,
